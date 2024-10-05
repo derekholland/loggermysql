@@ -1,0 +1,40 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// The Workout model
+model Workout {
+  id        Int        @id @default(autoincrement()) // Auto-incrementing primary key
+  title     String // The workout title
+  date      DateTime   @default(now()) // The date of the workout
+  exercises Exercise[] // Relation to Exercise
+}
+
+// The Exercise model
+model Exercise {
+  id        Int     @id @default(autoincrement()) // Auto-incrementing primary key
+  name      String // Exercise name
+  sets      Set[] // Relation to Set
+  workoutId Int // Foreign key to Workout
+  workout   Workout @relation(fields: [workoutId], references: [id], onDelete: Cascade) // Cascade delete exercises when workout is deleted
+}
+
+// The Set model
+model Set {
+  id         Int      @id @default(autoincrement()) // Auto-incrementing primary key
+  weight     Int // The weight used in the set
+  reps       Int // The number of reps in the set
+  exerciseId Int // Foreign key to Exercise
+  exercise   Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade) // Cascade delete sets when exercise is deleted
+}
